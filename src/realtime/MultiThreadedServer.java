@@ -6,17 +6,21 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * MultiThreadedServer: Một server có thể xử lý nhiều client cùng lúc bằng cách
+ * tạo một thread riêng cho mỗi client kết nối.
+ */
 public class MultiThreadedServer {
 	public static void main(String[] args) {
 		try (ServerSocket serverSocket = new ServerSocket(6666)) {
 			System.out.println("Server is running on port 6666...");
 
 			while (true) {
-				// Wait for and accept a connection from a client
+				// Chờ và chấp nhận kết nối từ client
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("New client connected: " + clientSocket);
 
-				// Each client is handled by a separate thread
+				// Tạo một luồng mới để xử lý client
 				ClientHandler clientHandler = new ClientHandler(clientSocket);
 				new Thread(clientHandler).start();
 			}
@@ -26,9 +30,11 @@ public class MultiThreadedServer {
 	}
 }
 
-// Class to handle each client in a separate thread
+/**
+ * ClientHandler: Xử lý từng client riêng biệt trong một luồng.
+ */
 class ClientHandler implements Runnable {
-	private Socket clientSocket;
+	private Socket clientSocket; // Socket để giao tiếp với client
 
 	public ClientHandler(Socket socket) {
 		this.clientSocket = socket;
@@ -37,25 +43,31 @@ class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// Create input and output streams
+			// Tạo luồng đọc dữ liệu từ client
 			DataInputStream input = new DataInputStream(clientSocket.getInputStream());
+
+			// Tạo luồng ghi dữ liệu gửi về client
 			DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
 
+			// Gửi thông báo chào mừng đến client
 			output.writeUTF("Hello! You are connected to the Server.");
 
 			while (true) {
+				// Đọc tin nhắn từ client
 				String message = input.readUTF();
 				System.out.println("Received from client: " + message);
 
+				// Nếu client gửi "exit" thì ngắt kết nối
 				if (message.equalsIgnoreCase("exit")) {
 					System.out.println("Client disconnected.");
 					break;
 				}
 
+				// Gửi phản hồi lại client
 				output.writeUTF("Server received: " + message);
 			}
 
-			// Close connection
+			// Đóng luồng dữ liệu và socket khi client ngắt kết nối
 			input.close();
 			output.close();
 			clientSocket.close();
