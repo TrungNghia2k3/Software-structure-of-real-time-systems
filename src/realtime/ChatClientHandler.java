@@ -66,7 +66,7 @@ public class ChatClientHandler implements Runnable {
 			System.out.println(clientName + " disconnected abruptly."); // Xử lý khi client thoát đột ngột
 		} finally {
 			closeConnection(); // Đóng kết nối khi kết thúc
-		}
+		}	
 	}
 
 	/**
