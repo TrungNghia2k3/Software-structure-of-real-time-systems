@@ -34,8 +34,8 @@ class NguoiDungATM extends Thread {
 				Thread.sleep(100 + new Random().nextInt(200)); // Giao dịch
 			} finally {
 				System.out.println(name + ": Giao dịch xong. Rời khỏi ATM...");
+				System.out.println(name + ": ATM hiện còn: " + (semaphore.availablePermits()+1));
 				semaphore.release(); // Nhường lại ATM
-				System.out.println(name + ": ATM hiện còn: " + semaphore.availablePermits());
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
